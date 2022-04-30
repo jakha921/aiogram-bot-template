@@ -2,28 +2,21 @@ from aiogram import types
 
 from loader import dp, bot
 from aiogram.dispatcher.filters.builtin import Command
+from keyboards.inline.links_inline import links 
+from keyboards.inline.sendContact import send_contact  
+from keyboards.default.sendLocation import send_location
+from utils.get_distance import choose_shortest
+
 import logging
 
 
-@dp.message_handler(content_types='photo')
-async def photo_handler(msg: types.Message):
-    photo = msg.photo[-1].file_id
-    await msg.answer(photo)
-
-@dp.message_handler(content_types='video')
-async def photo_handler(msg: types.Message):
-    video = msg.video[-1].file_id
-    await msg.answer(video)
-    
+# commands
 @dp.message_handler(commands='profile')
 async def profile_info(msg: types.Message):
     photo_link = 'AgACAgIAAxkBAAIlZ2Jj75A8BHv1k-Ji62QxNLPkLxjDAAKdvDEbRA8hSwjBl-D3Zzq3AQADAgADeAADJAQ'
-    photo_url = 'https://instagram.ftas3-2.fna.fbcdn.net/v/t51.2885-15/106626783_1707628682726730_6732860763337866783_n.jpg?stp=dst-jpg_e35&_nc_ht=instagram.ftas3-2.fna.fbcdn.net&_nc_cat=106&_nc_ohc=Ae52MdZAEw4AX87Dgc6&edm=ALQROFkBAAAA&ccb=7-4&ig_cache_key=MjM0ODExOTUzMDAyMDMzNTc2OQ%3D%3D.2-ccb7-4&oh=00_AT-qA8WoI2tE0b4_4VRN4Di-xRLJLRQSIHaiXdROCQy3tw&oe=626A50E3&_nc_sid=30a2ef'
-    photo_path = types.InputFile('media/photos/avatar.jpg')
-    await msg.answer_photo(photo_path, caption='Привет, меня зовут Джахангир\nМой GitHub : https://github.com/jakha921/')
-    await msg.reply_photo(photo_url, caption='Привет, меня зовут Джахангир\nМой GitHub : https://github.com/jakha921/')
-    await bot.send_photo(msg.from_user.id, photo=photo_url, caption='Привет, меня зовут Джахангир\nМой GitHub : https://github.com/jakha921/')
-    
+    text = 'Привет, меня зовут Джахангир\nМой GitHub : https://github.com/jakha921/'
+    await msg.answer_photo(photo_link, caption=text, reply_markup=links)
+
 @dp.message_handler(commands='album')
 async def send_album(msg: types.Message):
     album = types.MediaGroup()
@@ -41,3 +34,55 @@ async def send_album(msg: types.Message):
     album.attach_video(v1, caption='album')
     
     await msg.answer_media_group(album)
+
+@dp.message_handler(commands='get_info')
+async def get_info(msg: types.Message):
+    photo_token ='AgACAgIAAxkBAAIlZ2Jj75A8BHv1k-Ji62QxNLPkLxjDAAKdvDEbRA8hSwjBl-D3Zzq3AQADAgADeAADJAQ'
+    text = 'Поделитись со своими данныйми'
+    # await msg.answer_photo(photo_token, text, reply_markup=send_contact)
+    await msg.answer_photo(photo_token, text, reply_markup=send_location)
+
+
+# content type
+@dp.message_handler(content_types='photo')
+async def photo_handler(msg: types.Message):
+    photo = msg.photo[-1].file_id
+    await msg.answer(photo)
+
+@dp.message_handler(content_types='video')
+async def photo_handler(msg: types.Message):
+    video = msg.video[-1].file_id
+    await msg.answer(video)
+
+@dp.message_handler(content_types='location')
+async def get_location(msg: types.Message):
+    location = msg.location
+    lat = location.latitude
+    long= location.longitude
+    closes_places = choose_shortest(location)
+    
+    text = "\n\n".join([f"<a href='{url}'>{shop_name}</a>\n Masofa: {distance:.1f} km."
+                    for shop_name, distance, url, shop_location in closes_places])
+    await msg.answer(f"Rahmat. \n"
+                        f"Latitude = {lat}\n"
+                        f"Longitude = {long}\n\n"
+                        f"{text}", disable_web_page_preview=True, reply_markup=types.ReplyKeyboardRemove())
+
+    for shop_name, distance, url, shop_location in closes_places:
+        await msg.answer_location(latitude=shop_location["lat"],
+                                        longitude=shop_location["lon"])
+
+@dp.message_handler(content_types='contact')
+async def get_contact(msg: types.Message):
+    # print(msg)
+    await msg.answer(f'Спасибо мы добавили вас в свой контакт как, \n\n<b>{msg.contact.full_name}\t{msg.contact.phone_number}</b>', reply_markup=types.ReplyKeyboardRemove())
+    
+    
+# inline
+@dp.callback_query_handler(text='contact')
+async def get_contact(call: types.CallbackQuery):
+    await call.message.answer_contact('+998913339636', 'Jakhongir')
+
+@dp.callback_query_handler(text='location')
+async def get_location(call: types.CallbackQuery):
+    await call.message.answer_location(40.091892, 65.367157)

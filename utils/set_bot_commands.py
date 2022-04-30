@@ -8,5 +8,6 @@ async def set_default_commands(dp):
             types.BotCommand("help", "Yordam"),
             types.BotCommand("profile", "About creator"),
             types.BotCommand("album", "Album of photos"),
+            types.BotCommand("get_info", "Share information"),
         ]
     )
