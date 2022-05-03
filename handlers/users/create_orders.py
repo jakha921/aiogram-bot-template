@@ -1,4 +1,5 @@
 from aiogram import types
+from data.config import ADMINS
 
 from loader import dp, bot
 from data.products import pizza, book, regular_shipping, fast_shipping, pickup_shipping
@@ -30,14 +31,14 @@ async def order_book(msg: types.Message):
 async def book_invoice(call: types.CallbackQuery):
     await bot.send_invoice(chat_id=call.from_user.id, 
                            **book.generate_invoice(),
-                            payload="123456")
+                            payload="book")
     await call.answer()
     
 @dp.callback_query_handler(text="product:pizza")
 async def book_invoice(call: types.CallbackQuery):
     await bot.send_invoice(chat_id=call.from_user.id,
                           **pizza.generate_invoice (),
-                            payload="123457")
+                            payload="pizza")
     await call.answer()
 
 
@@ -57,3 +58,24 @@ async def choose_shipping(query: types.ShippingQuery):
         await bot.answer_shipping_query(shipping_query_id=query.id,
                                         shipping_options=[regular_shipping],
                                         ok=True)
+
+
+# pre check out 
+@dp.pre_checkout_query_handler()
+async def process_pre_checkout_query(pre_checkout_query: types.PreCheckoutQuery):
+    await bot.answer_pre_checkout_query(pre_checkout_query_id=pre_checkout_query.id,
+                                        ok=True)
+    await bot.send_message(chat_id=pre_checkout_query.from_user.id,
+                            text="Xaridingiz uchun rahmat!")
+    
+    await bot.send_message(chat_id=ADMINS[0],
+                            text=f"Quyidagi mahsulot sotildi: {pre_checkout_query.invoice_payload}\n"
+                                f"ID: {pre_checkout_query.id}\n"
+                                f"Telegram user: {pre_checkout_query.from_user.first_name}\n"                                
+                                f"Xaridor: {pre_checkout_query.order_info.name}, tel: {pre_checkout_query.order_info.phone_number}")
+    
+    from pprint import pprint
+    pprint(f'main info = {pre_checkout_query.__dict__}')
+    pprint(f'from user = {pre_checkout_query.from_user.__dict__}')
+    pprint(f'oreder info = {pre_checkout_query.order_info.__dict__}')
+    

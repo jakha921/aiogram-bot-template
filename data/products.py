@@ -19,6 +19,8 @@ pizza = Product(
     ],
     start_parameter="create_order",
     photo_url="https://bellissimo.uz/_next/image?url=https%3A%2F%2Fio.bellissimo.uz%2Fimages%2F03650000-6bec-ac1f-7b66-08da0011769d.jpg&w=750&q=75",
+    photo_width=800,
+    photo_height=600,
     need_email=True,
     need_name=True,
     need_phone_number=True,    
@@ -40,6 +42,8 @@ book = Product(
         ),
     ],
     photo_url='https://pbs.twimg.com/media/EWxVndaXsAQGCzm.jpg',
+    photo_width=900,
+    photo_height=750,
     need_name=True,
     need_phone_number=True,
     need_shipping_address=True,
@@ -53,25 +57,27 @@ regular_shipping = types.ShippingOption(
     prices=[
         types.LabeledPrice(
             label='7 дней',
-            amount=200,
-        )
-    ]
+            amount=200000,
+        )],
 )
 
 fast_shipping = types.ShippingOption(
     id='fast',
     title='Доставка за день',
-    prices=types.LabeledPrice(
+    prices=[
+        types.LabeledPrice(
         label='1 день',
         amount=300,
-    )
+    )]
 )
 
 pickup_shipping = types.ShippingOption(
     id='pickup',
     title='Самовывоз',
-    prices=types.LabeledPrice(
-        label='Бесплатно',
-        amount=-100,
-    )
+    prices=[
+        types.LabeledPrice(
+            label='Скидка',
+            amount=-1200000,
+        )
+    ]
 )
