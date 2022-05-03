@@ -5,7 +5,7 @@ from utils.misc.product import Product
 
 pizza = Product(
     title="Bellisimo Pizza",
-    description="Пицца из мяса и бекона",
+    description="Пепперони сердце",
     currency="UZS",
     prices=[
         types.LabeledPrice(
@@ -14,10 +14,10 @@ pizza = Product(
     ),
         types.LabeledPrice(
         label="Доставка",
-        amount=1000000      #10.000.00 UZS
+        amount=1200000      #12.000.00 UZS
     ),
     ],
-    start_parameter="create order",
+    start_parameter="create_order",
     photo_url="https://bellissimo.uz/_next/image?url=https%3A%2F%2Fio.bellissimo.uz%2Fimages%2F03650000-6bec-ac1f-7b66-08da0011769d.jpg&w=750&q=75",
     need_email=True,
     need_name=True,
@@ -27,22 +27,23 @@ pizza = Product(
 book = Product(
     title='Война и мир',
     description='Алексондр Сергеевич Толстой',
-    start_parameter='заказать книгу',
-    currency='USD',
+    start_parameter='order_book',
+    currency='UZS',
     prices=[
         types.LabeledPrice(
         label='Книга',
-        amount=400,
+        amount=4000000,
         ),
         types.LabeledPrice(
             label='Доставка',
-            amount=100,
+            amount=1200000,
         ),
     ],
     photo_url='https://pbs.twimg.com/media/EWxVndaXsAQGCzm.jpg',
     need_name=True,
     need_phone_number=True,
     need_shipping_address=True,
+    is_flexible=True,
 )
 
 
