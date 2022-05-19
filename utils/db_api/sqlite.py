@@ -77,6 +77,12 @@ class Database:
         UPDATE Users SET email=? WHERE id=?
         """
         return self.execute(sql, parameters=(email, id), commit=True)
+    
+    def update_user_lang(self, lang, id):
+        sql = f"""
+        UPDATE Users SET language=? WHERE id=?
+        """
+        return self.execute(sql, parameters=(lang, id), commit=True)
 
     def delete_users(self):
         self.execute("DELETE FROM Users WHERE TRUE", commit=True)
